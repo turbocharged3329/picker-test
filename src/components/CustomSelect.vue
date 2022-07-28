@@ -11,18 +11,19 @@
           ref="input"
           type="text"
           class="select__input"
-          @click="togglePicker"
+          @pointerdown="togglePicker(!isPickerShown)"
+          readonly
           :value="value"
+          :class="{active: isPickerShown}"
         />
         <button class="select__input-clear-btn" v-if="type == 'date'"></button>
         <button
           class="select__input-toggle-btn"
           v-if="type != 'date'"
           :class="{ opened: isPickerShown }"
-          @click="togglePicker(!isPickerShown)"
         ></button>
       </div>
-      <!-- <div
+      <div
         class="single-choice__picker picker"
         v-if="isPickerShown && type == 'single-choice'"
         :class="selectData.length <= 7 ? 'small' : 'big'"
@@ -32,12 +33,12 @@
             class="single-choice__picker-item"
             :class="{ selected: item.name == singleSelected }"
             :key="item.id"
-            @click="selectItem(item.name)"
+            @pointerdown="selectItem(item.name)"
           >
             {{ item.name }}
           </div>
         </template>
-      </div> -->
+      </div>
       <div
         class="multiple-choice__picker picker"
         v-if="isPickerShown && type == 'multiple-choice'"
@@ -46,7 +47,7 @@
           <div
             class="multiple-choice__picker-item"
             :key="item.id"
-            @click.prevent.stop="selectMultipleItem(item.name)"
+            @pointerdown.prevent.stop="selectMultipleItem(item.name)"
           >
             {{ item.name }}
             <input
@@ -60,17 +61,17 @@
           </div>
         </template>
       </div>
-      <!-- <div class="date__picker picker" v-if="isPickerShown && type == 'date'">
+      <div class="date__picker picker" v-if="isPickerShown && type == 'date'">
         <div class="date__picker-wrapper">
           <div class="date__picker-navbar">
             <button
               class="date__picker-navbar-btn decrease"
-              @click="changeYear(false)"
+              @pointerdown="changeYear(false)"
             ></button>
             <span>{{ selectedDate.year }}</span>
             <button
               class="date__picker-navbar-btn increase"
-              @click="changeYear"
+              @pointerdown="changeYear"
             ></button>
           </div>
           <div class="date__picker-months-list">
@@ -79,14 +80,14 @@
                 class="date__picker-months-item"
                 :class="{ selected: selectedDate.month == month.name }"
                 :key="month.id"
-                @click="selectDate(month.name)"
+                @pointerdown="selectDate(month.name)"
               >
                 {{ month.name }}
               </div>
             </template>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -260,8 +261,11 @@ button {
     border-radius: 3px;
     border: 1px solid silver;
     padding: 0px 50px 0 16px;
-    &:focus {
+    &.active {
       border: 0.7px solid #ff9a4d;
+      outline: none;
+    }
+    &:focus {
       outline: none;
     }
     &-wrapper {

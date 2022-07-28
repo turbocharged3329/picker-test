@@ -234,7 +234,7 @@ button {
       height: 1em;
       flex-shrink: 0;
       flex-grow: 0;
-      border: 1px solid #adb5bd;
+      border: 1.25px solid #D0D9DE;;
       border-radius: 2.5px;
       background-repeat: no-repeat;
       background-position: center center;
@@ -431,6 +431,11 @@ button {
       @extend .select-item;
       padding-right: 16px;
       justify-content: space-between;
+      &:hover {
+        .custom-checkbox + label::before {
+          border: 1.25px solid #ff9a4d;
+        }
+      }
     }
   }
 }

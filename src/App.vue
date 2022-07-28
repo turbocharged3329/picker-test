@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <p>{{ selected }}</p>
-    <custom-select :select-data="selectData" v-model="selected"></custom-select>
+    <custom-select :select-data="selectData" :type="'date'" v-model="selected"></custom-select>
   </div>
 </template>
 

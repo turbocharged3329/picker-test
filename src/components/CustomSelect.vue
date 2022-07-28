@@ -21,9 +21,9 @@
           :class="{ opened: isPickerShown }"
         ></button>
       </div>
-      <div
+      <!-- <div
         class="single-choice__picker picker"
-        v-if="isPickerShown && type != 'date'"
+        v-if="isPickerShown && type == 'single-choice'"
         :class="selectData.length <= 7 ? 'small' : 'big'"
       >
         <template v-for="item in selectData">
@@ -36,13 +36,24 @@
             {{ item.name }}
           </div>
         </template>
-        <!-- <template v-for="item in selectData">
-          <div class="select__picker-item" :key="item.id" @click="selectItem(item)">
-            {{ item.name }}
-            <input type="checkbox" :value="item.name" v-model="multipleSelected"/>
-          </div>
-        </template> -->
-      </div>
+      </div> -->
+      <template v-for="item in selectData">
+        <div
+          class="multiple-choice__picker-item"
+          :key="item.id"
+          @click.prevent.stop="selectMultipleItem(item.name)"
+        >
+          {{ item.name }}
+          <input
+            class="custom-checkbox"
+            :id="'input' + item.id"
+            type="checkbox"
+            :value="item.name"
+            v-model="multipleSelected"
+          />
+          <label :for="'input' + item.id"></label>
+        </div>
+      </template>
       <!-- <div class="date__picker picker" v-if="isPickerShown && type == 'date'">
         <div class="date__picker-wrapper">
           <div class="date__picker-navbar">
@@ -131,6 +142,21 @@ export default {
       this.selectedDate.month = month;
       this.$emit("input", this.selectedDateValue);
     },
+    selectMultipleItem(itemData) {
+      let multipleInString = this.multipleSelected.join("; ");
+
+      if (!multipleInString.includes(itemData)) {
+        multipleInString += itemData + "; ";
+        this.multipleSelected = multipleInString.split("; ");
+      } else {
+        this.multipleSelected.splice(
+          this.multipleSelected.findIndex((elem) => elem == itemData),
+          1
+        );
+      }
+
+      this.$emit("input", this.multipleSelected.join("; "));
+    },
     changeYear(increase = true) {
       increase ? this.selectedDate.year++ : this.selectedDate.year--;
     },
@@ -165,6 +191,35 @@ button {
   &:hover {
     background-color: #ff9a4d !important;
     color: white;
+  }
+}
+.custom-checkbox {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  margin: 0px;
+  & + label {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+      flex-grow: 0;
+      border: 1px solid #adb5bd;
+      border-radius: 2.5px;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 50% 50%;
+    }
+  }
+  &:checked + label::before {
+    border: 1px solid #ff9a4d;
+    background-color: #ff9a4d;
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='12' viewBox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.75 5.70041L5.4375 9.75L13.25 1' stroke='white' stroke-width='1.875'/%3E%3C/svg%3E%0A");
   }
 }
 //
@@ -324,12 +379,12 @@ button {
         background: transparent; /* цвет дорожки */
       }
       &::-webkit-scrollbar-thumb {
-        background-color: #D0D9DE;; /* цвет плашки */
+        background-color: #d0d9de; /* цвет плашки */
         border-radius: 30px; /* закругления плашки */
         border: 4px solid white; /* padding вокруг плашки */
       }
-      scrollbar-width: 16px;          /* "auto" или "thin"  */
-      scrollbar-color: #D0D9DE transparent;   /* плашка скролла и дорожка */ 
+      scrollbar-width: 16px; /* "auto" или "thin"  */
+      scrollbar-color: #d0d9de transparent; /* плашка скролла и дорожка */
     }
     &-item {
       flex-basis: 100%;

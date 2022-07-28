@@ -16,7 +16,11 @@
           :value="value"
           :class="{ active: isPickerShown, empty: !value }"
         />
-        <button class="select__input-clear-btn" v-if="type == 'date'" @pointerdown="clearDate"></button>
+        <button
+          class="select__input-clear-btn"
+          v-if="type == 'date'"
+          @pointerdown="clearDate"
+        ></button>
         <button
           class="select__input-toggle-btn"
           v-if="type != 'date'"
@@ -52,14 +56,19 @@
           >
             {{ item.name }}
             <input
-              class="custom-checkbox"
+              class="custom-checkbox multiple-choice__picker-item-input"
               :id="'input' + item.id"
               type="checkbox"
               :value="item.name"
               v-model="multipleSelected"
-              @change="$emit('input', multipleSelected.length ? multipleSelected.join('; ') : [])"
+              @change="
+                $emit(
+                  'input',
+                  multipleSelected.length ? multipleSelected.join('; ') : []
+                )
+              "
             />
-            <label :for="'input' + item.id"></label>
+            <label :for="'input' + item.id" class="multiple-choice__picker-item-label"></label>
           </div>
         </template>
       </div>
@@ -165,21 +174,17 @@ export default {
         let multipleInString = this.multipleSelected.join(",");
 
         if (!multipleInString.includes(itemData)) {
-          multipleInString += itemData + ",";
-          this.multipleSelected = multipleInString.split(",");
+          this.multipleSelected.push(itemData);
         } else {
-          // const regex = new RegExp(`${itemData}; `);
-          // multipleInString = multipleInString.replace(regex, '');
-          // this.multipleSelected = multipleInString.split(",");
           this.multipleSelected.splice(
-            this.multipleSelected.findIndex(elem => elem == itemData),
+            this.multipleSelected.findIndex((elem) => elem == itemData),
             1
-          )
-          if (!this.multipleSelected.length) {
-            this.multipleSelected = []
-          }
+          );
         }
 
+        if (!this.multipleSelected.length) {
+            this.multipleSelected = [];
+        }
         this.$emit("input", this.multipleSelected.join("; "));
       }
     },
@@ -187,19 +192,29 @@ export default {
       increase ? this.selectedDate.year++ : this.selectedDate.year--;
     },
     clearDate() {
-      this.$emit('input', '');
+      this.$emit("input", "");
       this.togglePicker(false);
-    }
+    },
+    checkClickOutOfPicker(event) {
+      if (
+        !event.target.className.includes("select__input") &&
+        !event.target.className.includes("picker")
+      ) {
+        this.togglePicker(false);
+      }
+    },
   },
   mounted() {
     if (this.placeholder) {
       this.$refs.input.value = this.placeholder;
     }
 
-    if (this.type == 'date') {
+    if (this.type == "date") {
       const now = new Date();
       this.selectedDate.year = now.getFullYear();
     }
+
+    document.addEventListener("click", this.checkClickOutOfPicker);
   },
 };
 </script>

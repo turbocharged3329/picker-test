@@ -15,19 +15,35 @@
           :value="value"
         />
         <button class="select__input-clear-btn" v-if="type == 'date'"></button>
+        <button
+          class="select__input-toggle-btn"
+          v-if="type != 'date'"
+          :class="{ opened: isPickerShown }"
+        ></button>
       </div>
-      <!-- <div class="select__picker" v-if="isPickerShown && type != 'date'"> -->
-      <!-- <template v-for="item in selectData">
-          <div class="select__picker-item" :key="item.id" @click="selectItem(item)">{{ item.name }}</div>
-        </template> -->
-      <!-- <template v-for="item in selectData">
+      <div
+        class="single-choice__picker picker"
+        v-if="isPickerShown && type != 'date'"
+        :class="selectData.length <= 7 ? 'small' : 'big'"
+      >
+        <template v-for="item in selectData">
+          <div
+            class="single-choice__picker-item"
+            :class="{ selected: item.name == singleSelected }"
+            :key="item.id"
+            @click="selectItem(item.name)"
+          >
+            {{ item.name }}
+          </div>
+        </template>
+        <!-- <template v-for="item in selectData">
           <div class="select__picker-item" :key="item.id" @click="selectItem(item)">
             {{ item.name }}
             <input type="checkbox" :value="item.name" v-model="multipleSelected"/>
           </div>
         </template> -->
-      <!-- </div> -->
-      <div class="date__picker" v-if="type == 'date'">
+      </div>
+      <!-- <div class="date__picker picker" v-if="isPickerShown && type == 'date'">
         <div class="date__picker-wrapper">
           <div class="date__picker-navbar">
             <button
@@ -53,7 +69,7 @@
             </template>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -79,7 +95,7 @@ export default {
   },
   data() {
     return {
-      selected: null,
+      singleSelected: null,
       multipleSelected: [],
       selectedDate: {
         year: 2022,
@@ -103,11 +119,13 @@ export default {
     };
   },
   methods: {
-    togglePicker() {
-      this.isPickerShown = !this.isPickerShown;
+    togglePicker(toOpen = true) {
+      this.isPickerShown = toOpen;
     },
     selectItem(itemData) {
-      if (this.type == "single-choice") this.selected = itemData;
+      this.singleSelected = itemData;
+      this.togglePicker(false);
+      this.$emit("input", this.singleSelected);
     },
     selectDate(month) {
       this.selectedDate.month = month;
@@ -126,12 +144,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+//общие стили
 button {
   background: transparent;
   border: none;
   padding: 0;
   cursor: pointer;
 }
+.picker {
+  background: white;
+  box-shadow: 0px 1px 4px rgba(181, 158, 140, 0.04),
+    0px 4px 16px rgba(75, 64, 57, 0.1);
+  border-radius: 3px;
+  top: calc(100% + 10px);
+  position: absolute;
+}
+.selected {
+  background-color: #ff9a4d;
+  color: white;
+  &:hover {
+    background-color: #ff9a4d !important;
+    color: white;
+  }
+}
+//
 .select {
   &__wrapper {
     position: relative;
@@ -143,10 +179,16 @@ button {
     box-sizing: border-box;
     border-radius: 3px;
     border: 1px solid silver;
+    padding: 0px 50px 0 16px;
+    &:focus {
+      border: 0.7px solid #ff9a4d;
+      outline: none;
+    }
     &-wrapper {
       display: block;
       width: fit-content;
       height: fit-content;
+      position: relative;
       &.date {
         position: relative;
         & .select__input {
@@ -180,26 +222,20 @@ button {
       right: 16px;
       transform: translateY(-50%);
     }
-  }
-  &__picker {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-content: flex-start;
-    max-height: 100px;
-    height: 100px;
-    width: 150px;
-    overflow-y: auto;
-    position: absolute;
-    left: 0;
-    top: calc(100% + 5px);
-    border: 1px solid silver;
-    &-item {
-      display: block;
-      flex-basis: 100%;
-      height: 15px;
-      text-align: left;
-      cursor: pointer;
+    &-toggle-btn {
+      width: 12px;
+      height: 7px;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='7' viewBox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.7071 6.70711C11.3166 7.09763 10.6834 7.09763 10.2929 6.70711L6 2.41421L1.70711 6.70711C1.31658 7.09763 0.683417 7.09763 0.292893 6.70711C-0.0976315 6.31658 -0.0976315 5.68342 0.292893 5.29289L5.29289 0.292893C5.68342 -0.097631 6.31658 -0.097631 6.70711 0.292893L11.7071 5.29289C12.0976 5.68342 12.0976 6.31658 11.7071 6.70711Z' fill='%23253238'/%3E%3C/svg%3E%0A");
+      background-repeat: no-repeat;
+      background-size: auto;
+      transform: translateY(-50%);
+      position: absolute;
+      z-index: 1;
+      right: 16px;
+      top: 50%;
+      &.opened {
+        transform: translateY(-50%) rotate(180deg);
+      }
     }
   }
 }
@@ -207,10 +243,6 @@ button {
   &__picker {
     width: 290px;
     height: 220px;
-    background: white;
-    box-shadow: 0px 1px 4px rgba(181, 158, 140, 0.04),
-      0px 4px 16px rgba(75, 64, 57, 0.1);
-    border-radius: 3px;
     &-wrapper {
       width: 100%;
       height: 100%;
@@ -267,6 +299,54 @@ button {
         &:hover {
           background: #fff9f4;
         }
+      }
+    }
+  }
+}
+.single-choice {
+  &__picker {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 320px;
+    width: 320px;
+    &.small {
+      height: fit-content;
+    }
+    &.big {
+      height: 300px;
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 16px; /* ширина scrollbar */
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent; /* цвет дорожки */
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #D0D9DE;; /* цвет плашки */
+        border-radius: 30px; /* закругления плашки */
+        border: 4px solid white; /* padding вокруг плашки */
+      }
+      scrollbar-width: 16px;          /* "auto" или "thin"  */
+      scrollbar-color: #D0D9DE transparent;   /* плашка скролла и дорожка */ 
+    }
+    &-item {
+      flex-basis: 100%;
+      height: 44px;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      padding-left: 16px;
+      &:hover {
+        background: #fff9f4;
+      }
+      &:first-of-type {
+        border-radius: 3px 3px 0px 0px;
+      }
+      &:last-of-type {
+        border-radius: 0px 0px 3px 3px;
       }
     }
   }

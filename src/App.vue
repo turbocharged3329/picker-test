@@ -1,33 +1,61 @@
 <template>
   <div id="app">
     <p>{{ selected }}</p>
-    <custom-select :select-data="selectData" :type="'date'" v-model="selected"></custom-select>
+    <custom-select
+      :select-data="selectData"
+      :type="'single-choice'"
+      v-model="selected"
+    ></custom-select>
   </div>
 </template>
 
 <script>
-import CustomSelect from '@/components/CustomSelect.vue';
+import CustomSelect from "@/components/CustomSelect.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    CustomSelect
+    CustomSelect,
   },
   data() {
     return {
       selectData: [
         {
           id: 1,
-          name: '123',
+          name: "123",
         },
         {
           id: 2,
-          name: '345',
-        }
+          name: "345",
+        },
+        {
+          id: 3,
+          name: "678",
+        },
+        {
+          id: 4,
+          name: "910",
+        },
+        {
+          id: 5,
+          name: "302",
+        },
+        {
+          id: 6,
+          name: "3215",
+        },
+        {
+          id: 7,
+          name: "11215",
+        },
+        {
+          id: 8,
+          name: "1999",
+        },
       ],
       selected: null,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style lang="scss">

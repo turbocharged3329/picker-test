@@ -19,6 +19,7 @@
           class="select__input-toggle-btn"
           v-if="type != 'date'"
           :class="{ opened: isPickerShown }"
+          @click="togglePicker(!isPickerShown)"
         ></button>
       </div>
       <!-- <div
@@ -37,7 +38,10 @@
           </div>
         </template>
       </div> -->
-      <div class="multiple-choice__picker picker">
+      <div
+        class="multiple-choice__picker picker"
+        v-if="isPickerShown && type == 'multiple-choice'"
+      >
         <template v-for="item in selectData">
           <div
             class="multiple-choice__picker-item"
@@ -299,17 +303,19 @@ button {
       transform: translateY(-50%);
     }
     &-toggle-btn {
-      width: 12px;
-      height: 7px;
+      width: 24px;
+      height: 24px;
       background-image: url("data:image/svg+xml,%3Csvg width='12' height='7' viewBox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.7071 6.70711C11.3166 7.09763 10.6834 7.09763 10.2929 6.70711L6 2.41421L1.70711 6.70711C1.31658 7.09763 0.683417 7.09763 0.292893 6.70711C-0.0976315 6.31658 -0.0976315 5.68342 0.292893 5.29289L5.29289 0.292893C5.68342 -0.097631 6.31658 -0.097631 6.70711 0.292893L11.7071 5.29289C12.0976 5.68342 12.0976 6.31658 11.7071 6.70711Z' fill='%23253238'/%3E%3C/svg%3E%0A");
       background-repeat: no-repeat;
       background-size: auto;
+      background-position: 100% center;
       transform: translateY(-50%);
       position: absolute;
       z-index: 1;
       right: 16px;
       top: 50%;
       &.opened {
+        background-position: 0 center;
         transform: translateY(-50%) rotate(180deg);
       }
     }

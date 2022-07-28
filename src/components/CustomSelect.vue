@@ -16,7 +16,7 @@
           :value="value"
           :class="{ active: isPickerShown, empty: !value }"
         />
-        <button class="select__input-clear-btn" v-if="type == 'date'"></button>
+        <button class="select__input-clear-btn" v-if="type == 'date'" @pointerdown="clearDate"></button>
         <button
           class="select__input-toggle-btn"
           v-if="type != 'date'"
@@ -122,7 +122,7 @@ export default {
       singleSelected: null,
       multipleSelected: [],
       selectedDate: {
-        year: 2022,
+        year: 0,
         month: "",
       },
       isPickerShown: false,
@@ -186,10 +186,19 @@ export default {
     changeYear(increase = true) {
       increase ? this.selectedDate.year++ : this.selectedDate.year--;
     },
+    clearDate() {
+      this.$emit('input', '');
+      this.togglePicker(false);
+    }
   },
   mounted() {
     if (this.placeholder) {
       this.$refs.input.value = this.placeholder;
+    }
+
+    if (this.type == 'date') {
+      const now = new Date();
+      this.selectedDate.year = now.getFullYear();
     }
   },
 };

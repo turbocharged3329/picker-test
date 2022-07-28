@@ -37,23 +37,25 @@
           </div>
         </template>
       </div> -->
-      <template v-for="item in selectData">
-        <div
-          class="multiple-choice__picker-item"
-          :key="item.id"
-          @click.prevent.stop="selectMultipleItem(item.name)"
-        >
-          {{ item.name }}
-          <input
-            class="custom-checkbox"
-            :id="'input' + item.id"
-            type="checkbox"
-            :value="item.name"
-            v-model="multipleSelected"
-          />
-          <label :for="'input' + item.id"></label>
-        </div>
-      </template>
+      <div class="multiple-choice__picker picker">
+        <template v-for="item in selectData">
+          <div
+            class="multiple-choice__picker-item"
+            :key="item.id"
+            @click.prevent.stop="selectMultipleItem(item.name)"
+          >
+            {{ item.name }}
+            <input
+              class="custom-checkbox"
+              :id="'input' + item.id"
+              type="checkbox"
+              :value="item.name"
+              v-model="multipleSelected"
+            />
+            <label :for="'input' + item.id"></label>
+          </div>
+        </template>
+      </div>
       <!-- <div class="date__picker picker" v-if="isPickerShown && type == 'date'">
         <div class="date__picker-wrapper">
           <div class="date__picker-navbar">
@@ -193,6 +195,25 @@ button {
     color: white;
   }
 }
+.select-item {
+  flex-basis: 100%;
+  height: 44px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 16px;
+  &:hover {
+    background: #fff9f4;
+  }
+  &:first-of-type {
+    border-radius: 3px 3px 0px 0px;
+  }
+  &:last-of-type {
+    border-radius: 0px 0px 3px 3px;
+  }
+}
+
 .custom-checkbox {
   position: absolute;
   z-index: -1;
@@ -387,22 +408,23 @@ button {
       scrollbar-color: #d0d9de transparent; /* плашка скролла и дорожка */
     }
     &-item {
-      flex-basis: 100%;
-      height: 44px;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      padding-left: 16px;
-      &:hover {
-        background: #fff9f4;
-      }
-      &:first-of-type {
-        border-radius: 3px 3px 0px 0px;
-      }
-      &:last-of-type {
-        border-radius: 0px 0px 3px 3px;
-      }
+      @extend .select-item;
+    }
+  }
+}
+.multiple-choice {
+  &__picker {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 320px;
+    width: 320px;
+    height: fit-content;
+    &-item {
+      @extend .select-item;
+      padding-right: 16px;
+      justify-content: space-between;
     }
   }
 }

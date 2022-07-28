@@ -14,13 +14,14 @@
           @pointerdown="togglePicker(!isPickerShown)"
           readonly
           :value="value"
-          :class="{active: isPickerShown}"
+          :class="{ active: isPickerShown, empty: !value }"
         />
         <button class="select__input-clear-btn" v-if="type == 'date'"></button>
         <button
           class="select__input-toggle-btn"
           v-if="type != 'date'"
           :class="{ opened: isPickerShown }"
+          @pointerdown="togglePicker(!isPickerShown)"
         ></button>
       </div>
       <div
@@ -47,7 +48,7 @@
           <div
             class="multiple-choice__picker-item"
             :key="item.id"
-            @pointerdown.prevent.stop="selectMultipleItem(item.name)"
+            @pointerdown.stop="selectMultipleItem($event, item.name)"
           >
             {{ item.name }}
             <input
@@ -56,6 +57,7 @@
               type="checkbox"
               :value="item.name"
               v-model="multipleSelected"
+              @change="$emit('input', multipleSelected.length ? multipleSelected.join('; ') : [])"
             />
             <label :for="'input' + item.id"></label>
           </div>
@@ -110,6 +112,10 @@ export default {
         return [];
       },
     },
+    placeholder: {
+      type: String,
+      default: "Select",
+    },
   },
   data() {
     return {
@@ -136,6 +142,11 @@ export default {
       ],
     };
   },
+  computed: {
+    selectedDateValue() {
+      return `${this.selectedDate.month} ${this.selectedDate.year}`;
+    },
+  },
   methods: {
     togglePicker(toOpen = true) {
       this.isPickerShown = toOpen;
@@ -149,29 +160,37 @@ export default {
       this.selectedDate.month = month;
       this.$emit("input", this.selectedDateValue);
     },
-    selectMultipleItem(itemData) {
-      let multipleInString = this.multipleSelected.join("; ");
+    selectMultipleItem(event, itemData) {
+      if (event.target.tagName != "LABEL") {
+        let multipleInString = this.multipleSelected.join(",");
 
-      if (!multipleInString.includes(itemData)) {
-        multipleInString += itemData + "; ";
-        this.multipleSelected = multipleInString.split("; ");
-      } else {
-        this.multipleSelected.splice(
-          this.multipleSelected.findIndex((elem) => elem == itemData),
-          1
-        );
+        if (!multipleInString.includes(itemData)) {
+          multipleInString += itemData + ",";
+          this.multipleSelected = multipleInString.split(",");
+        } else {
+          // const regex = new RegExp(`${itemData}; `);
+          // multipleInString = multipleInString.replace(regex, '');
+          // this.multipleSelected = multipleInString.split(",");
+          this.multipleSelected.splice(
+            this.multipleSelected.findIndex(elem => elem == itemData),
+            1
+          )
+          if (!this.multipleSelected.length) {
+            this.multipleSelected = []
+          }
+        }
+
+        this.$emit("input", this.multipleSelected.join("; "));
       }
-
-      this.$emit("input", this.multipleSelected.join("; "));
     },
     changeYear(increase = true) {
       increase ? this.selectedDate.year++ : this.selectedDate.year--;
     },
   },
-  computed: {
-    selectedDateValue() {
-      return `${this.selectedDate.month} ${this.selectedDate.year}`;
-    },
+  mounted() {
+    if (this.placeholder) {
+      this.$refs.input.value = this.placeholder;
+    }
   },
 };
 </script>
@@ -235,7 +254,7 @@ button {
       height: 1em;
       flex-shrink: 0;
       flex-grow: 0;
-      border: 1.25px solid #D0D9DE;;
+      border: 1.25px solid #d0d9de;
       border-radius: 2.5px;
       background-repeat: no-repeat;
       background-position: center center;
@@ -264,6 +283,9 @@ button {
     &.active {
       border: 0.7px solid #ff9a4d;
       outline: none;
+    }
+    &.empty {
+      color: #90a4af;
     }
     &:focus {
       outline: none;

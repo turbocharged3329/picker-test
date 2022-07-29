@@ -92,7 +92,9 @@
               class="date__picker-navbar-btn decrease"
               @pointerdown="changeYear(false)"
             ></button>
-            <span>{{ selectedDate.year }}</span>
+            <span class="date__picker-navbar-year">{{
+              selectedDate.year
+            }}</span>
             <button
               class="date__picker-navbar-btn increase"
               @pointerdown="changeYear"
@@ -399,7 +401,8 @@ button {
       line-height: 20px;
       color: #90a4af;
       text-align: left;
-      margin-bottom: 6px;
+      position: absolute;
+      bottom: calc(100% + 6px);
     }
     &-clear-btn {
       width: 10px;
@@ -453,6 +456,12 @@ button {
       flex-flow: row nowrap;
       justify-content: space-between;
       align-items: center;
+      &-year {
+        font-weight: 800;
+        font-size: 16px;
+        line-height: 24px;
+        color: #253238;
+      }
       &-btn {
         display: block;
         width: 24px;

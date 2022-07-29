@@ -193,7 +193,7 @@ export default {
         } else {
           picker = this.$refs["date-picker"];
         }
-        
+
         const inputCoords = this.$refs.input?.getBoundingClientRect();
 
         if (
@@ -278,9 +278,6 @@ button {
   border-radius: 3px;
   top: calc(100% + 10px);
   position: absolute;
-  &.above-input {
-    top: calc(-100% + 10px);
-  }
 }
 .selected {
   background-color: #ff9a4d;
@@ -345,12 +342,15 @@ button {
   }
   &__input {
     cursor: pointer;
-    min-width: 320px;
+    min-width: 300px;
     height: 44px;
     box-sizing: border-box;
     border-radius: 3px;
     border: 1px solid silver;
     padding: 0px 50px 0 16px;
+    @media (max-width: 768px) {
+      width: 100% !important;
+    }
     &.active {
       border: 0.7px solid #ff9a4d;
       outline: none;
@@ -366,6 +366,9 @@ button {
       width: fit-content;
       height: fit-content;
       position: relative;
+      @media (max-width: 768px) {
+        width: 100% !important;
+      }
       &.date {
         position: relative;
         & .select__input {
@@ -433,6 +436,9 @@ button {
   &__picker {
     width: 290px;
     height: 220px;
+    @media (max-width: 576px) {
+      width: 100% !important;
+    }
     &-wrapper {
       width: 100%;
       height: 100%;
@@ -499,8 +505,12 @@ button {
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
-    max-width: 320px;
-    width: 320px;
+    min-width: 300px;
+    width: fit-content;
+    @media (max-width: 768px) {
+      max-width: 100%;
+      width: 100% !important;
+    }
     &.small {
       height: fit-content;
     }
@@ -511,7 +521,7 @@ button {
         width: 16px; /* ширина scrollbar */
       }
       &::-webkit-scrollbar-track {
-        background: transparent; /* цвет дорожки */
+        background: white; /* цвет дорожки */
       }
       &::-webkit-scrollbar-thumb {
         background-color: #d0d9de; /* цвет плашки */
@@ -532,9 +542,13 @@ button {
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
-    max-width: 320px;
-    width: 320px;
+    min-width: 300px;
+    width: fit-content;
     height: fit-content;
+    @media (max-width: 768px) {
+      max-width: 100%;
+      width: 100% !important;
+    }
     &-item {
       @extend .select-item;
       padding-right: 16px;

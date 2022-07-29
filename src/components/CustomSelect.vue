@@ -51,6 +51,7 @@
       <div
         class="multiple-choice__picker picker"
         v-if="isPickerShown && type == 'multiple-choice'"
+        ref="multiple-picker"
       >
         <template v-for="item in selectData">
           <div
@@ -111,6 +112,7 @@
 </template>
 
 <script>
+import { nextTick } from "vue";
 export default {
   name: "CustomSelect",
   components: {},
@@ -160,6 +162,7 @@ export default {
         { name: "Ноя", id: 11 },
         { name: "Дек", id: 12 },
       ],
+      isAboveInput: false,
     };
   },
   computed: {
@@ -170,6 +173,23 @@ export default {
   methods: {
     togglePicker(toOpen = true) {
       this.isPickerShown = toOpen;
+
+      nextTick(() => {
+        this.setPickerPosition();
+      });
+    },
+    setPickerPosition() {
+      if (this.isPickerShown) {
+        const picker = this.$refs["multiple-picker"];
+        const inputCoords = this.$refs.input?.getBoundingClientRect();
+  
+        if (
+          picker?.clientHeight >
+          document.documentElement.clientHeight - inputCoords.bottom
+        ) {
+          picker.style.top = `${-picker?.clientHeight - 10}px`;
+        }
+      }
     },
     selectItem(itemData) {
       this.singleSelected = itemData;
@@ -245,6 +265,9 @@ button {
   border-radius: 3px;
   top: calc(100% + 10px);
   position: absolute;
+  &.above-input {
+    top: calc(-100% + 10px);
+  }
 }
 .selected {
   background-color: #ff9a4d;

@@ -3,7 +3,7 @@
     <p>{{ selected }}</p>
     <custom-select
       :select-data="selectData"
-      :type="'multiple-choice'"
+      :type="'date'"
       :placeholder="'Select me'"
       v-model="selected"
     ></custom-select>

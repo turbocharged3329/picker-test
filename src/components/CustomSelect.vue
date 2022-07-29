@@ -36,6 +36,7 @@
         class="single-choice__picker picker"
         v-if="isPickerShown && type == 'single-choice'"
         :class="selectData.length <= 7 ? 'small' : 'big'"
+        ref="single-picker"
       >
         <template v-for="item in selectData">
           <div
@@ -80,7 +81,11 @@
           </div>
         </template>
       </div>
-      <div class="date__picker picker" v-if="isPickerShown && type == 'date'">
+      <div
+        class="date__picker picker"
+        v-if="isPickerShown && type == 'date'"
+        ref="date-picker"
+      >
         <div class="date__picker-wrapper">
           <div class="date__picker-navbar">
             <button
@@ -180,9 +185,17 @@ export default {
     },
     setPickerPosition() {
       if (this.isPickerShown) {
-        const picker = this.$refs["multiple-picker"];
+        let picker;
+        if (this.type == "single-choice") {
+          picker = this.$refs["single-picker"];
+        } else if (this.type == "multiple-choice") {
+          picker = this.$refs["multiple-picker"];
+        } else {
+          picker = this.$refs["date-picker"];
+        }
+        
         const inputCoords = this.$refs.input?.getBoundingClientRect();
-  
+
         if (
           picker?.clientHeight >
           document.documentElement.clientHeight - inputCoords.bottom

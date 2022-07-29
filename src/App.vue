@@ -3,9 +3,9 @@
     <p>{{ selected }}</p>
     <custom-select
       :select-data="selectData"
-      :type="'date'"
-      :placeholder="'Select me'"
-      :label="'Date'"
+      :type="'multiple-choice'"
+      :placeholder="'Select me again'"
+      :label="'Date1'"
       v-model="selected"
     ></custom-select>
   </div>
@@ -20,6 +20,7 @@ export default {
   },
   data() {
     return {
+      //массив вариантов выбора для селектов типов "single-choice" и "multiple-choice"
       selectData: [
         {
           id: 1,
@@ -54,6 +55,7 @@ export default {
           name: "1999",
         },
       ],
+      //выбранное в селекте значение
       selected: null,
     };
   },

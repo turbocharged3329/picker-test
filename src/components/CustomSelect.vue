@@ -7,6 +7,7 @@
           date: type == 'date',
         }"
       >
+      <!-- поле ввода селекта -->
         <label for="select-input" class="select__input-label" v-if="label">
           {{ label }}
         </label>
@@ -32,6 +33,8 @@
           @pointerdown="togglePicker(!isPickerShown)"
         ></button>
       </div>
+      <!--  -->
+      <!-- пикер тип "single-choice" -->
       <div
         class="single-choice__picker picker"
         v-if="isPickerShown && type == 'single-choice'"
@@ -49,6 +52,8 @@
           </div>
         </template>
       </div>
+      <!--  -->
+      <!-- пикер тип "multiple-choice" -->
       <div
         class="multiple-choice__picker picker"
         v-if="isPickerShown && type == 'multiple-choice'"
@@ -81,6 +86,8 @@
           </div>
         </template>
       </div>
+      <!--  -->
+      <!-- пикер тип "date" -->
       <div
         class="date__picker picker"
         v-if="isPickerShown && type == 'date'"
@@ -114,6 +121,7 @@
           </div>
         </div>
       </div>
+      <!--  -->
     </div>
   </div>
 </template>
@@ -123,24 +131,30 @@ import { nextTick } from "vue";
 export default {
   name: "CustomSelect",
   components: {},
+  emits: ['input'],
   props: {
+    //значение селекта для двухсторонней привязки
     value: {
       type: String,
     },
+    //типа селекта - "single-choice" || "multiple-choice" || "date"
     type: {
       type: String,
       default: "single-choice",
     },
+    //массив вариантов выбора для селекта типов "single-choice" && "multiple-choice"
     selectData: {
       type: Array,
       default() {
         return [];
       },
     },
+    //плейсхолдер селекта
     placeholder: {
       type: String,
       default: "Select",
     },
+    //лейбл селекта
     label: {
       type: String,
       default: "",
@@ -148,13 +162,14 @@ export default {
   },
   data() {
     return {
-      singleSelected: null,
-      multipleSelected: [],
+      singleSelected: null, //выбранное значение в селекте типа "single-choice"
+      multipleSelected: [], //выбранное значение в селекте типа "multiple-choice"
       selectedDate: {
         year: 0,
         month: "",
-      },
+      }, //объект выбранной даты в селекте типа "date"
       isPickerShown: false,
+      //массив значений месяцев для селекта типа "date"
       months: [
         { name: "Янв", id: 1 },
         { name: "Фев", id: 2 },
@@ -169,15 +184,20 @@ export default {
         { name: "Ноя", id: 11 },
         { name: "Дек", id: 12 },
       ],
-      isAboveInput: false,
     };
   },
   computed: {
+    //вычисляемое свойство для выбранной даты
     selectedDateValue() {
       return `${this.selectedDate.month} ${this.selectedDate.year}`;
     },
   },
   methods: {
+    /**
+     * переключение видимости пикера
+     * @param {Boolean} toOpen - открыть ли пикер
+     * @returns void
+     */
     togglePicker(toOpen = true) {
       this.isPickerShown = toOpen;
 
@@ -185,6 +205,10 @@ export default {
         this.setPickerPosition();
       });
     },
+    /**
+     * управление расположением пикера в зависимости от положения селекта относительно верха и низа экрана
+     * @returns void
+     */
     setPickerPosition() {
       if (this.isPickerShown) {
         let picker;
@@ -206,19 +230,38 @@ export default {
         }
       }
     },
+    /**
+     * выбор варианта в селекте типа "single-choice"
+     * @param {String} itemData - значение выбранного варианта
+     * @returns void
+     */
     selectItem(itemData) {
       this.singleSelected = itemData;
       this.togglePicker(false);
       this.$emit("input", this.singleSelected);
     },
+    /**
+     * выбор варианта в селекте типа "date"
+     * @param {String} month - значение выбранного варианта
+     * @returns void
+     */
     selectDate(month) {
       this.selectedDate.month = month;
       this.$emit("input", this.selectedDateValue);
     },
+    /**
+     * выбор варианта в селекте типа "date"
+     * @param {Event} event -событие клика на вариант выбора
+     * @param {String} itemData - значение выбранного варианта
+     * @returns void
+     */
     selectMultipleItem(event, itemData) {
+      //если кликнули не на чекбоксе
+      //реализовано для сохранения нативного v-model для массива на чекбоксе 
       if (event.target.tagName != "LABEL") {
         let multipleInString = this.multipleSelected.join(",");
 
+        //если вариант уже отмечен
         if (!multipleInString.includes(itemData)) {
           this.multipleSelected.push(itemData);
         } else {
@@ -234,13 +277,26 @@ export default {
         this.$emit("input", this.multipleSelected.join("; "));
       }
     },
+    /**
+     * изменение значения года в пикере "date"
+     * @param {Boolean} increase - увеличить ли значение
+     * @returns void
+     */
     changeYear(increase = true) {
       increase ? this.selectedDate.year++ : this.selectedDate.year--;
     },
+    /**
+     * очистка выбранной даты в селекте типа "date"
+     * @returns void
+     */
     clearDate() {
       this.$emit("input", "");
       this.togglePicker(false);
     },
+    /**
+     * сворачивание пикера при клике вне его области
+     * @param {Event} event - событие клика
+     */
     checkClickOutOfPicker(event) {
       if (
         !event.target.className.includes("select__input") &&
@@ -251,15 +307,17 @@ export default {
     },
   },
   mounted() {
+    //устанавливаем плейсхолдер
     if (this.placeholder) {
       this.$refs.input.value = this.placeholder;
     }
 
     if (this.type == "date") {
+      //устанавливаем занчение текущего года
       const now = new Date();
       this.selectedDate.year = now.getFullYear();
     }
-
+    //вешаем слушателя для закрытия пикера при клике вне области
     document.addEventListener("click", this.checkClickOutOfPicker);
   },
 };

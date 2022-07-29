@@ -7,10 +7,14 @@
           date: type == 'date',
         }"
       >
+        <label for="select-input" class="select__input-label" v-if="label">
+          {{ label }}
+        </label>
         <input
           ref="input"
           type="text"
           class="select__input"
+          id="select-input"
           @pointerdown="togglePicker(!isPickerShown)"
           readonly
           :value="value"
@@ -68,7 +72,10 @@
                 )
               "
             />
-            <label :for="'input' + item.id" class="multiple-choice__picker-item-label"></label>
+            <label
+              :for="'input' + item.id"
+              class="multiple-choice__picker-item-label"
+            ></label>
           </div>
         </template>
       </div>
@@ -124,6 +131,10 @@ export default {
     placeholder: {
       type: String,
       default: "Select",
+    },
+    label: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -183,7 +194,7 @@ export default {
         }
 
         if (!this.multipleSelected.length) {
-            this.multipleSelected = [];
+          this.multipleSelected = [];
         }
         this.$emit("input", this.multipleSelected.join("; "));
       }
@@ -339,6 +350,17 @@ button {
           z-index: 1;
         }
       }
+    }
+    &-label {
+      display: block;
+      width: 100%;
+      height: auto;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 20px;
+      color: #90a4af;
+      text-align: left;
+      margin-bottom: 6px;
     }
     &-clear-btn {
       width: 10px;

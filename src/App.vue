@@ -71,6 +71,5 @@ export default {
 }
 input {
   font-family: 'Nunito Sans', sans-serif;
-
 }
 </style>
